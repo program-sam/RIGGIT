@@ -1,0 +1,183 @@
+#title {
+    position: relative;
+    color: white;
+    text-align: center;
+    background-color: var(--dark);
+    font-weight: normal;
+    margin: 0;
+    padding: 15px 0;
+}
+
+#title:after {
+    position: absolute;
+    padding: 15px 0;
+    background-color: var(--dark);
+    
+    top: 0;
+    left: 0;
+    width: 100%;
+    content: 'hover to see shareable room name'
+}
+
+#title:hover:after {
+    visibility: hidden;
+}
+
+#container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: stretch;
+    width: 90%;
+}
+
+#container #left {
+    border: 5px solid white;
+}
+
+#gameWindow {
+    position: relative;
+    text-align: center;
+}
+
+#lobby {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    padding: 5%;
+    background-color: rgba(255, 255, 255, 0.8);
+    transition: top 2s;
+}
+
+#lobby > div {
+    display: flex;
+    justify-content: space-around;
+    
+}
+
+#lobby th {
+    padding: 0 10px;
+}
+
+#lobby > button {
+    position: absolute;
+    bottom: 60px;
+    left: 0;
+    right: 0;
+    margin: auto;
+}
+
+#lobby table input {
+    padding: 0;
+    border-style: none;
+    background: none;
+}
+
+#lobby .picker {
+    cursor: pointer;
+    border-radius: 5px;
+    width: 2em;
+    height: 1em;
+    margin: auto;
+}
+
+#gameChat {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    background-color: white;
+    min-width: 300px;
+    max-width: 30vw;
+    height: 770px;
+}
+
+#sendBar {
+    display: flex;
+    text-align: center;
+    padding: 5px 10px;
+    background-color: var(--neutral);
+}
+
+#sendBar input {
+    font-family: 'Rubik';
+    border-radius: 10px;
+    flex-grow: 1;
+}
+
+#sendBar img {
+    margin: 0 0.5em;
+    width: 2em;
+    filter: invert(1);
+    opacity: 0.8;
+}
+
+#sendBar img:hover {
+    cursor: pointer;
+    opacity: 1;
+}
+
+#chatMessages {
+    overflow-y: scroll;
+    min-height: 200px;
+    flex-grow: 1;
+}
+
+.chatMessage {
+    background-color: var(--neutral);
+    margin: 10px 50px 10px 10px;
+    margin-right: 50px;
+    padding: 5px 10px;
+    border-radius: 15px 15px 15px 0;
+    word-wrap: break-word;
+}
+
+.chatMessage.you {
+    background-color: var(--neutral-dark);
+    border-radius: 15px 15px 0;
+    margin: 10px 10px 10px 50px;
+}
+
+#playerBox {
+    padding: 20px;
+}
+
+#playerBox span,
+#playerBox p {
+    display: inline-block;
+    margin: 0;
+}
+
+#playerBox span {
+    width: 1em;
+    height: 1em;
+    margin-right: 0.5em;
+}
+
+.player.watching {
+    opacity: 0.5;
+}
+
+.player.current {
+    font-weight: bold;
+}
+
+.player.current .playerName::after {
+    content: '★';
+    line-height: 1.2em;
+    display: inline-block;
+    margin-left: 1em;
+    font-weight: bold;
+}
+
+.player .playerScore {
+    float: right;
+}

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>RIGGIT</title>
+    <link rel="stylesheet" type="text/css" href="/css/common.css">
+    <link rel="stylesheet" type="text/css" href="/css/index.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Rubik">
+
+    <script src='/js/index.js'></script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZR8L7GXVPW"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-ZR8L7GXVPW');
+    </script>
+</head>
+
+<body>
+    <div>
+        <img style='width: 30%'
+            src='/img/logo.svg' />
+        <button class='animated'
+            onclick="document.getElementById('newGame').classList.toggle('show'); document.getElementById('fade').classList.toggle('show')">
+            NEW GAME</button>
+        <form id='newGame' action='javascript:newGame()'>
+            <h2>NEW GAME</h2>
+            <label>Name: <input
+                            type='text'
+                            name='username'
+                            maxlength="15"
+                            id='username'
+                            placeholder="Enter username..."
+                            required
+                            autocomplete="off"
+                            onkeydown="if(event.key == 'Enter'){newGame()}"
+                        ></label><br>
+            <button type="button" onclick="newGame()">New Game</button>
+        </form>
+
+        <button class='animated' style="animation-delay:0.07s"
+            onclick="document.getElementById('joinGame').classList.toggle('show'); document.getElementById('fade').classList.toggle('show')">
+            JOIN GAME</button>
+        <form id='joinGame' action="game">
+            <h2>JOIN GAME</h2>
+            <label>Name: <input
+                            type='text'
+                            name='username'
+                            maxlength="15"
+                            id='username'
+                            placeholder="Enter username..."
+                            required
+                            autocomplete="off"
+                            onkeydown="if(event.key == 'Enter'){document.getElementById('room').focus()}"
+                        ></label><br>
+            <label>Room: <input
+                            type='text'
+                            name='room'
+                            id='room'
+                            placeholder="Enter room code..."
+                            required autocomplete="off"
+                            onkeydown="if(event.key == 'Enter'){joinGame()}"
+                        ></label><br>
+            <button type="button" onclick="joinGame()">Join Game</button>
+            <p class='warning'></p>
+        </form>
+
+        <br>
+
+        <button class='animated' style="animation-delay:0.14s"
+        onclick="document.getElementById('howToPlay').classList.toggle('show'); document.getElementById('fade').classList.toggle('show')"
+        >HOW TO PLAY</button>
+        <div id='howToPlay'>
+            <h2>HOW TO PLAY</h2>
+            <p>
+                In RIGGIT you each take turns in claiming disricts. These districts consist of 5 adjecent regions and each region will vote for
+                a certain player as marked by the colored squares inside them. When you select your 5th region, the entire district is scored
+                and the player that has the most votes wins all the votes in the district. Now it is the next player's turn.
+            </p>
+            <img src='/img/tut1.gif'>
+            <p>
+                When a region is blocked, and it is impossible to create a district with this region, the region is disabled for the rest of the game.
+            </p>
+            <img src='/img/tut2.gif'>
+            <p>
+                As soon as all possible districts are drawn, the game ends and the player with the most votes wins this round.
+            </p>
+        </div>
+
+        <button class='animated' style="animation-delay:0.21s"
+        onclick="document.getElementById('about').classList.toggle('show'); document.getElementById('fade').classList.toggle('show')"
+        >ABOUT</button>
+        <div id='about'>
+            <h2>ABOUT</h2>
+        </div>
+    </div>
+    
+    <div onclick="
+            document.getElementById('newGame').classList.remove('show');
+            document.getElementById('joinGame').classList.remove('show');
+            document.getElementById('howToPlay').classList.remove('show');
+            document.getElementById('about').classList.remove('show');
+            document.getElementById('fade').classList.remove('show')"
+        id='fade'></div>
+</body>
+
+</html>

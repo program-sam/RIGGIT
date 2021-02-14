@@ -1,0 +1,95 @@
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    --attention: rgb(249, 65, 68);
+    --light: rgb(255, 221, 140);
+    --neutral: rgb(144, 190, 109);
+    --neutral-dark: rgb(67, 170, 139);
+    --dark: rgb(87, 117, 144);
+}
+
+::-moz-selection {
+    color: white;
+    background: var(--neutral-dark);
+}
+  
+::selection {
+    color: white;
+    background: var(--neutral-dark);
+}
+
+body {
+    margin: 100px 5vh;
+    font-size: 1.2em;
+    font-family: 'Rubik';
+    background-color: var(--light);
+}
+
+select {
+    font-size: 1em;
+    font-family: 'Rubik';
+}
+
+button:focus {
+    outline: none;
+}
+
+input:focus {
+    outline: none;
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: #f1f1f1; 
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #888; 
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #555; 
+}
+
+input {
+    font-size: 1em;
+    margin: 0.3em 0.1em;
+}
+
+button {
+    font-size: 1em;
+    position: relative;
+    display: block;
+    padding: 0.2em 1em;
+    margin: 1em auto;
+    background-color: var(--dark);
+    border: 5px solid var(--dark);
+    border-radius: 2em;
+    color: white; 
+}
+
+button.animated {
+    animation: bouncy 10s infinite ease-in-out;
+}
+
+button:hover{
+    cursor: pointer;
+    background-color: var(--neutral-dark);
+}
+
+@keyframes bouncy {
+    0% {right:0em}
+    72% {right :0em}
+    74% {right :-0.6em}
+    76% {right :0.6em}
+    78% {right :0em}
+    100% {right :0em;}
+    }
