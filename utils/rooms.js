@@ -55,7 +55,6 @@ function removeRoom(id){
     const index = rooms.findIndex(room => room.id === id)
     if (index !== -1){
         return rooms.splice(index, 1)[0]
-        console.log('removed room')
     }
 }
 

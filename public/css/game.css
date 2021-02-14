@@ -181,3 +181,30 @@
 .player .playerScore {
     float: right;
 }
+
+#buymeacoffee {
+    visibility: hidden;
+}
+
+#popup {
+    background-color: white;
+    padding: 20px;
+    position: absolute;
+    top: -200vh;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: top 0.5s;
+    z-index: 1;
+    visibility: hidden;
+}
+
+#popup.show {
+    top: 50%;
+    visibility: visible;
+}
+
+.confetti {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+}
