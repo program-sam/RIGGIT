@@ -5,7 +5,8 @@
   "main": "app.js",
   "scripts": {
     "start": "node app",
-    "dev": "npx babel public/js6 --out-dir public/js & node app"
+    "build": "npx babel utils/browserJS --out-dir public/js",
+    "dev": "npx babel utils/browserJS --out-dir public/js & node app"
   },
   "author": "",
   "license": "ISC",
