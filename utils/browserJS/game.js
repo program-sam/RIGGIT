@@ -34,10 +34,8 @@ class Hex {
         hexagon(this.x, this.y, this.radius)
 
         if (this.owner){
-            console.log(this.ownerTimer)
             if (this.ownerTimer < ownerAnimationDuration){ this.ownerTimer += 1 }
             if(this.ownerTimer > ownerAnimationDuration) { this.ownerTimer = ownerAnimationDuration }
-            console.log(this.ownerTimer)
             fill(...hexToRgb(gameSettings.moveOrder.find(p => p.id == this.owner).color), 100)
 
             strokeWeight(this.ownerTimer < ownerAnimationDuration ? 0 : 2)

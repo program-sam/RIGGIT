@@ -85,6 +85,23 @@ button:hover{
     background-color: var(--neutral-dark);
 }
 
+#fade {
+    visibility: hidden;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0px;
+    left: 0px;
+    opacity: 0;
+    background-color: rgb(0,0,0);
+    transition: all 0.5s;
+}
+
+#fade.show {
+    visibility: visible;
+    opacity: 0.3;
+}
+
 @keyframes bouncy {
     0% {right:0em}
     72% {right :0em}

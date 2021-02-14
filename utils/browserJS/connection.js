@@ -2,6 +2,9 @@
 const socket = io()
 
 let colorList = ['#c04abc', '#d81159', '#a41623', '#c27100', '#FFD23F', '#3da5d9', '#0d5c63', '#29bf12', '#0B032D']
+const win = new Audio('aud/win.mp3');
+const yourTurn = new Audio('aud/yourTurn.mp3');
+let itIsYourTurn = false
 
 // Get username and room from URL
 const { username, room } = Qs.parse(location.search, { ignoreQueryPrefix: true });
@@ -20,12 +23,11 @@ fetch(`/api/validateRoom/${room}`)
             document.getElementById('title').innerHTML = room.toUpperCase()
 
             // When a game was joined, add an event listener to warn the user when he leaves
-            console.log('shouldaaddf')
             window.addEventListener("beforeunload", function (e) {
-                if ( !ingame ){ return undefined }
+                if (!ingame) { return undefined }
                 var confirmationMessage = 'You are about to leave the current game. '
-                                        + 'If you leave the current game will end and your score will be lost.';
-            
+                    + 'If you leave the current game will end and your score will be lost.';
+
                 (e || window.event).returnValue = confirmationMessage; //Gecko + IE
                 return confirmationMessage; //Gecko + Webkit, Safari, Chrome etc.
             });
@@ -49,9 +51,9 @@ socket.on('roominfo', data => {
     colorList = data.room.availableColors.filter(c => !usedColors.includes(c.toLowerCase()))
 
     document.getElementById('gridShape').innerHTML = '<optgroup label="Shapes"><option value="Rectangle">Rectangle</option></optgroup><optgroup label="Countries">'
-    
+
     data.room.availableCountries.map(c => {
-        document.getElementById('gridShape').innerHTML += `<option ${c==data.room.settings.gridShape ? 'selected' : ''} value='${c}'>${c}</option>`
+        document.getElementById('gridShape').innerHTML += `<option ${c == data.room.settings.gridShape ? 'selected' : ''} value='${c}'>${c}</option>`
     })
 
     document.getElementById('gridShape').innerHTML += '</optgroup>'
@@ -104,6 +106,7 @@ socket.on('gameStarted', message => {
     initializeGame()
     drawPlayerBox(gameSettings, players, message.hexes)
     document.getElementById('lobby').style.top = '-300%'
+    if (!itIsYourTurn && gameSettings.currentPlayer.id == you.id){ itIsYourTurn = true; yourTurn.play() }
 })
 
 socket.on('gameData', message => {
@@ -120,11 +123,70 @@ socket.on('gameData', message => {
     gameSettings = message.gameSettings
     drawPlayerBox(gameSettings, players, message.hexes)
 
+    if (!itIsYourTurn && gameSettings.currentPlayer.id == you.id){ itIsYourTurn = true; yourTurn.play() }
+    else if (itIsYourTurn && gameSettings.currentPlayer.id != you.id){ itIsYourTurn = false }
+
 })
 
 socket.on('gameOver', players => {
     // Handle winners events
-    console.log(players)
+    itIsYourTurn = false
+    document.getElementById('popup').innerHTML = ''
+    const pNames = players.map(p => p.username)
+
+    if (pNames.length == 1) {
+        document.getElementById('popup').innerHTML = pNames[0] + ' won this game!'
+    } else if (pNames.length > 1) {
+        const lastPlayer = pNames.splice(-1, 1)[0]
+        document.getElementById('popup').innerHTML = pNames.join(', ').slice(0, -2) + ' and ' + lastPlayer + ' are worthy opponents!'
+    } else { return }
+
+    document.getElementById('popup').classList.add("show")
+    document.getElementById('fade').classList.toggle('show')
+    // document.getElementById('buymeacoffee').style.visibility = 'visible'
+    setTimeout(() => {
+        document.getElementById('popup').classList.remove("show")
+        document.getElementById('fade').classList.remove('show')
+    }, 3000)
+
+    // Launch the confetti cannons!
+    setTimeout(() => {
+        win.play()
+        const cannon = document.createElement('canvas')
+        cannon.width = window.innerWidth * 0.9
+        cannon.height = window.innerHeight * 0.9
+        cannon.style.position = 'absolute'
+        cannon.style.top = '0'
+        cannon.style.bottom = '0'
+        document.body.appendChild(cannon)
+    
+        const myConfetti1 = confetti.create(cannon, { resize: true, useWorker: true })
+        myConfetti1({
+            particleCount: 150,
+            startVelocity: 50,
+            decay: 0.95,
+            scalar: 1.2,
+            spread: 45,
+            angle: 35,
+            origin: {x: 0, y: 1}
+        });
+
+        const myConfetti2 = confetti.create(cannon, { resize: true, useWorker: true })
+        myConfetti2({
+            particleCount: 150,
+            startVelocity: 50,
+            decay: 0.95,
+            scalar: 1.2,
+            spread: 45,
+            angle: 145,
+            origin: {x: 1, y: 1}
+        });
+    
+        setTimeout(() => { myConfetti1.reset(); myConfetti2.reset(); cannon.remove() }, 2500)
+
+    }, 500)
+    
+
 })
 
 socket.on('gamePreview', previewHexes => { hexes = previewHexes.map(h => new Hex(h)) })

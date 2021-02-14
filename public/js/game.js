@@ -61,8 +61,6 @@ var Hex = /*#__PURE__*/function () {
       hexagon(this.x, this.y, this.radius);
 
       if (this.owner) {
-        console.log(this.ownerTimer);
-
         if (this.ownerTimer < ownerAnimationDuration) {
           this.ownerTimer += 1;
         }
@@ -71,7 +69,6 @@ var Hex = /*#__PURE__*/function () {
           this.ownerTimer = ownerAnimationDuration;
         }
 
-        console.log(this.ownerTimer);
         fill.apply(void 0, _toConsumableArray(hexToRgb(gameSettings.moveOrder.find(function (p) {
           return p.id == _this.owner;
         }).color)).concat([100]));

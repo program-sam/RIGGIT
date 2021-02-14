@@ -15,6 +15,7 @@
 
     <script src="js/jquery.min.js"></script>
     <script src='/socket.io/socket.io.js'></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.3.3/dist/confetti.browser.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/p5@1.2.0/lib/p5.js"></script>
     <script src="js/colorPick.min.js"></script>
     <script src="/js/game.js"></script>
@@ -55,6 +56,7 @@
                             <label>Grid Shape: <select id='gridShape' onchange="updateSettings()"></select></label>
                         </span>
                     </div>
+                    <p id='buymeacoffee'>Buy me a coffee pretty please</p>
                     <button onclick="startGame()">Start!</button>
                 </div>
             </div>
@@ -69,5 +71,8 @@
             </div>
         </span>
     </div>
+
+    <div id='fade'></div>
+    <span id="popup">Popup text...</span>
 </body>
 </html>
