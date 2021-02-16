@@ -3,7 +3,9 @@
 var socket = io();
 var colorList = ['#c04abc', '#d81159', '#a41623', '#c27100', '#FFD23F', '#3da5d9', '#0d5c63', '#29bf12', '#0B032D'];
 var win = new Audio('aud/win.mp3');
-var yourTurn = new Audio('aud/yourTurn.mp3'); // Get username and room from URL
+var yourTurn = new Audio('aud/yourTurn.mp3');
+var messagePing = new Audio('aud/message.mp3');
+var itIsYourTurn = false; // Get username and room from URL
 
 var _Qs$parse = Qs.parse(location.search, {
   ignoreQueryPrefix: true
@@ -46,6 +48,10 @@ fetch("/api/validateRoom/".concat(room)).then(function (res) {
 socket.on('message', function (message) {
   document.getElementById('chatMessages').innerHTML += "<div class='chatMessage ".concat(message.id == you.id ? 'you' : '', "'><strong>").concat(message.username, ":</strong> ").concat(message.text, "</div>");
   document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+
+  if (message.id !== you.id) {
+    messagePing.play();
+  }
 });
 socket.on('roominfo', function (data) {
   players = data.users;
@@ -101,7 +107,6 @@ socket.on('roominfo', function (data) {
   document.getElementById('cellSizeText').value = data.room.settings.radius;
   drawPlayerBox(data.room.game.gameSettings || gameSettings, players, data.room.game.hexes);
 });
-var itIsYourTurn = false;
 socket.on('gameStarted', function (message) {
   hexes = message.hexes.map(function (h) {
     return new Hex(h);
@@ -139,6 +144,7 @@ socket.on('gameData', function (message) {
 });
 socket.on('gameOver', function (players) {
   // Handle winners events
+  itIsYourTurn = false;
   document.getElementById('popup').innerHTML = '';
   var pNames = players.map(function (p) {
     return p.username;
@@ -154,8 +160,8 @@ socket.on('gameOver', function (players) {
   }
 
   document.getElementById('popup').classList.add("show");
-  document.getElementById('fade').classList.toggle('show');
-  document.getElementById('buymeacoffee').style.visibility = 'visible';
+  document.getElementById('fade').classList.toggle('show'); // document.getElementById('buymeacoffee').style.visibility = 'visible'
+
   setTimeout(function () {
     document.getElementById('popup').classList.remove("show");
     document.getElementById('fade').classList.remove('show');
