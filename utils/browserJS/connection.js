@@ -1,9 +1,10 @@
-
 const socket = io()
 
 let colorList = ['#c04abc', '#d81159', '#a41623', '#c27100', '#FFD23F', '#3da5d9', '#0d5c63', '#29bf12', '#0B032D']
 const win = new Audio('aud/win.mp3');
 const yourTurn = new Audio('aud/yourTurn.mp3');
+const messagePing = new Audio('aud/message.mp3');
+
 let itIsYourTurn = false
 
 // Get username and room from URL
@@ -41,6 +42,7 @@ fetch(`/api/validateRoom/${room}`)
 socket.on('message', message => {
     document.getElementById('chatMessages').innerHTML += `<div class='chatMessage ${message.id == you.id ? 'you' : ''}'><strong>${message.username}:</strong> ${message.text}</div>`
     document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight
+    if (message.id !== you.id){ messagePing.play() }
 })
 
 socket.on('roominfo', data => {

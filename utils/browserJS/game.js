@@ -91,6 +91,20 @@ class Hex {
     }
 }
 
+function updateCanvas(){
+    const ratio = gameSettings.mapWidth / gameSettings.mapHeight
+    if (window.innerWidth / window.innerHeight < ratio){
+        document.getElementById('defaultCanvas0').style.width = window.innerWidth * 0.7 + 'px'
+        document.getElementById('defaultCanvas0').style.height = window.innerWidth * 0.7 / ratio + 'px'
+    } else {
+        document.getElementById('defaultCanvas0').style.width = window.innerHeight * 0.8 * ratio + 'px'
+        document.getElementById('defaultCanvas0').style.height = window.innerHeight * 0.8 + 'px'
+    }
+    document.getElementById('gameChat').style.height = document.getElementById('title').offsetHeight + document.getElementById('gameWindow').offsetHeight + 10 + 'px'
+}
+
+window.onresize = updateCanvas
+
 function initializeGame(){
     setup()
 }
@@ -98,6 +112,7 @@ function initializeGame(){
 function setup() {
     const canvas = createCanvas(gameSettings.mapWidth, gameSettings.mapHeight);
     canvas.parent(document.getElementById('gameWindow'))
+    updateCanvas()
     frameRate(FR)
 
     // Calculate Hex Neighbors
