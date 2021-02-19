@@ -164,10 +164,11 @@ function updateCanvas() {
     document.getElementById('defaultCanvas0').style.height = window.innerHeight * 0.8 + 'px';
   }
 
-  document.getElementById('gameChat').style.height = document.getElementById('title').offsetHeight + document.getElementById('gameWindow').offsetHeight + 10 + 'px';
+  document.getElementById('gameChat').style.height = document.getElementById('title').offsetHeight + document.getElementById('gameWindow').offsetHeight + 20 + 'px';
 }
 
 window.onresize = updateCanvas;
+window.onload = updateCanvas;
 
 function initializeGame() {
   setup();
@@ -176,7 +177,7 @@ function initializeGame() {
 function setup() {
   var canvas = createCanvas(gameSettings.mapWidth, gameSettings.mapHeight);
   canvas.parent(document.getElementById('gameWindow'));
-  updateCanvas();
+  updateScore(true);
   frameRate(FR); // Calculate Hex Neighbors
 
   for (var i = 0; i < hexes.length; i++) {
@@ -217,10 +218,11 @@ function draw() {
   clear();
   hexes.forEach(function (h) {
     return h.show();
-  }); // updateScore()
+  });
+  updateScore(false);
 }
 
-function mousePressed() {
+function mouseClicked() {
   if (!ingame) {
     return;
   }
@@ -248,41 +250,45 @@ function hexagon(x, y, d) {
   endShape(CLOSE);
 }
 
-function updateScore() {
+function updateScore(init) {
+  var scoreRatio = document.getElementById('scoreRatio');
+
+  if (init) {
+    scoreRatio.innerHTML = '';
+  }
+
+  console.log(init);
+  console.log(gameSettings.moveOrder);
+
   for (var i = 0; i < gameSettings.moveOrder.length; i++) {
     var player = gameSettings.moveOrder[i];
-    var yLoc = gameSettings.mapHeight - gameSettings.mapMarginY + 15 * i;
     var votes = 0;
-    var initial = 0;
 
-    for (var j = 0; j < hexes.length; j++) {
-      var h = hexes[j];
-
-      if (h.majority == player.id) {
-        initial += h.people;
+    if (init) {
+      scoreRatio.innerHTML += "<span class='".concat(player.id, "' style='flex-grow: 0; background-color: ").concat(player.color, "'></span>");
+    } else {
+      for (var j = 0; j < hexes.length; j++) {
+        if (hexes[j].elected == player.id) {
+          votes += hexes[j].people;
+        }
       }
 
-      if (h.elected == player.id) {
-        votes += h.people;
+      scoreRatio.getElementsByClassName(player.id)[0].style.flexGrow = votes;
+    }
+  }
+
+  var eilandVotes = 0;
+
+  if (init) {
+    scoreRatio.innerHTML += "<span class='eiland' style='flex-grow: 0; background-color: rgb(".concat(islandColor[0], ", ").concat(islandColor[1], ", ").concat(islandColor[2], ")'></span>");
+  } else {
+    for (var _j = 0; _j < hexes.length; _j++) {
+      if (hexes[_j].island) {
+        eilandVotes += hexes[_j].people;
       }
     }
 
-    for (var _j = 0; _j < initial; _j++) {
-      // Background score tiles
-      var xLoc = 10 + _j * 15;
-      fill.apply(void 0, whiteColor);
-      strokeWeight(0);
-      rect(xLoc, yLoc, 12, 12);
-    }
-
-    for (var _j2 = 0; _j2 < votes; _j2++) {
-      // Score tiles
-      var _xLoc = 11 + _j2 * 15;
-
-      fill.apply(void 0, _toConsumableArray(hexToRgb(player.color)));
-      strokeWeight(0);
-      rect(_xLoc, yLoc + 1, 10, 10);
-    }
+    scoreRatio.getElementsByClassName('eiland')[0].style.flexGrow = eilandVotes;
   }
 }
 
