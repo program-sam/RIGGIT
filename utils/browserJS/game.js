@@ -164,9 +164,6 @@ function updateScore(init) {
     const scoreRatio = document.getElementById('scoreRatio')
 
     if (init){ scoreRatio.innerHTML = '' }
-
-    console.log(init)
-    console.log(gameSettings.moveOrder)
     for (let i = 0; i < gameSettings.moveOrder.length; i++) {
         const player = gameSettings.moveOrder[i]
         
@@ -180,17 +177,6 @@ function updateScore(init) {
             }
             scoreRatio.getElementsByClassName(player.id)[0].style.flexGrow = votes
         }
-    }
-
-    let eilandVotes = 0
-    if (init){ 
-        scoreRatio.innerHTML += `<span class='eiland' style='flex-grow: 0; background-color: rgb(${islandColor[0]}, ${islandColor[1]}, ${islandColor[2]})'></span>`
-     }
-    else {
-        for (let j = 0; j < hexes.length; j++) {
-            if (hexes[j].island) { eilandVotes += hexes[j].people }
-        }
-        scoreRatio.getElementsByClassName('eiland')[0].style.flexGrow = eilandVotes
     }
 }
 
