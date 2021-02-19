@@ -257,9 +257,6 @@ function updateScore(init) {
     scoreRatio.innerHTML = '';
   }
 
-  console.log(init);
-  console.log(gameSettings.moveOrder);
-
   for (var i = 0; i < gameSettings.moveOrder.length; i++) {
     var player = gameSettings.moveOrder[i];
     var votes = 0;
@@ -275,20 +272,6 @@ function updateScore(init) {
 
       scoreRatio.getElementsByClassName(player.id)[0].style.flexGrow = votes;
     }
-  }
-
-  var eilandVotes = 0;
-
-  if (init) {
-    scoreRatio.innerHTML += "<span class='eiland' style='flex-grow: 0; background-color: rgb(".concat(islandColor[0], ", ").concat(islandColor[1], ", ").concat(islandColor[2], ")'></span>");
-  } else {
-    for (var _j = 0; _j < hexes.length; _j++) {
-      if (hexes[_j].island) {
-        eilandVotes += hexes[_j].people;
-      }
-    }
-
-    scoreRatio.getElementsByClassName('eiland')[0].style.flexGrow = eilandVotes;
   }
 }
 
