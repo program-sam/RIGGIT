@@ -100,10 +100,11 @@ function updateCanvas(){
         document.getElementById('defaultCanvas0').style.width = window.innerHeight * 0.8 * ratio + 'px'
         document.getElementById('defaultCanvas0').style.height = window.innerHeight * 0.8 + 'px'
     }
-    document.getElementById('gameChat').style.height = document.getElementById('title').offsetHeight + document.getElementById('gameWindow').offsetHeight + 10 + 'px'
+    document.getElementById('gameChat').style.height = document.getElementById('title').offsetHeight + document.getElementById('gameWindow').offsetHeight + 20 + 'px'
 }
 
 window.onresize = updateCanvas
+window.onload = updateCanvas
 
 function initializeGame(){
     setup()
@@ -112,7 +113,7 @@ function initializeGame(){
 function setup() {
     const canvas = createCanvas(gameSettings.mapWidth, gameSettings.mapHeight);
     canvas.parent(document.getElementById('gameWindow'))
-    updateCanvas()
+    updateScore(true)
     frameRate(FR)
 
     // Calculate Hex Neighbors
@@ -136,10 +137,10 @@ function draw() {
     prevGameState = stateString()    
     clear()
     hexes.forEach(h => h.show())
-    // updateScore()
+    updateScore(false)
 }
 
-function mousePressed() {
+function mouseClicked() {
     if (!ingame){return}
     const {x, y} = document.getElementById('defaultCanvas0').getBoundingClientRect()
     if (you.id == gameSettings.currentPlayer.id){ socket.emit('mouseClick', [mouseX, mouseY]) }
@@ -159,39 +160,37 @@ function hexagon(x, y, d) {
     endShape(CLOSE);
 }
 
-function updateScore() {
+function updateScore(init) {
+    const scoreRatio = document.getElementById('scoreRatio')
+
+    if (init){ scoreRatio.innerHTML = '' }
+
+    console.log(init)
+    console.log(gameSettings.moveOrder)
     for (let i = 0; i < gameSettings.moveOrder.length; i++) {
         const player = gameSettings.moveOrder[i]
-
-        const yLoc = gameSettings.mapHeight - gameSettings.mapMarginY + 15 * i
+        
         let votes = 0
-        let initial = 0
-
-        for (let j = 0; j < hexes.length; j++) {
-            const h = hexes[j]
-
-            if (h.majority == player.id) { initial += h.people }
-
-            if (h.elected == player.id) {
-                votes += h.people
+        if (init){
+            scoreRatio.innerHTML += `<span class='${player.id}' style='flex-grow: 0; background-color: ${player.color}'></span>`
+        }
+        else {
+            for (let j = 0; j < hexes.length; j++) {
+                if (hexes[j].elected == player.id) { votes += hexes[j].people }
             }
+            scoreRatio.getElementsByClassName(player.id)[0].style.flexGrow = votes
         }
+    }
 
-        for (let j = 0; j < initial; j++) {
-            // Background score tiles
-            const xLoc = 10 + j * 15
-            fill(...whiteColor)
-            strokeWeight(0)
-            rect(xLoc, yLoc, 12, 12)
+    let eilandVotes = 0
+    if (init){ 
+        scoreRatio.innerHTML += `<span class='eiland' style='flex-grow: 0; background-color: rgb(${islandColor[0]}, ${islandColor[1]}, ${islandColor[2]})'></span>`
+     }
+    else {
+        for (let j = 0; j < hexes.length; j++) {
+            if (hexes[j].island) { eilandVotes += hexes[j].people }
         }
-
-        for (let j = 0; j < votes; j++) {
-            // Score tiles
-            const xLoc = 11 + j * 15
-            fill(...hexToRgb(player.color))
-            strokeWeight(0)
-            rect(xLoc, yLoc + 1, 10, 10)
-        }
+        scoreRatio.getElementsByClassName('eiland')[0].style.flexGrow = eilandVotes
     }
 }
 
