@@ -193,6 +193,11 @@ socket.on('gameOver', players => {
 
 socket.on('gamePreview', previewHexes => { hexes = previewHexes.map(h => new Hex(h)) })
 
+socket.on('roomError', _ => {
+    alert('So sorry but something went wrong with this game room. You will be redirected to home page where you can start a new game.')
+    window.location.href = '/'
+})
+
 function sendMessage() {
     const content = document.getElementById('chatInput')
     if (content.value) {
