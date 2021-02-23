@@ -220,6 +220,10 @@ socket.on('gamePreview', function (previewHexes) {
     return new Hex(h);
   });
 });
+socket.on('roomError', function (_) {
+  alert('Something went wrong with this game room. You will be sent to home page.');
+  window.location.href = '/';
+});
 
 function sendMessage() {
   var content = document.getElementById('chatInput');

@@ -39,7 +39,7 @@ io.on('connection', socket => {
         roomid = roomid.toLowerCase()
         username = username.length > 15 ? username.substring(0,15) : username
         const user = userJoin(socket.id, username, roomid)
-        
+        if (!user){ socket.emit('roomError'); return }
         socket.join(user.room)
 
         // Welcome current user
@@ -65,6 +65,7 @@ io.on('connection', socket => {
     // Listen for chatMessages
     socket.on('chatMessage', msg => {
         const user = getCurrentUser(socket.id)
+        if (!user){ socket.emit('roomError'); return }
         io.to(user.room).emit('message', formatMessage(user, msg))
     })
 
@@ -72,6 +73,7 @@ io.on('connection', socket => {
     socket.on('changeColor', color => {
         const user = getCurrentUser(socket.id)
         user.color = color
+        if (!user){ socket.emit('roomError'); return }
         const room = getRoom(user.room)
         io.to(user.room).emit('roominfo', { room, users: getRoomUsers(user.room) })
     })
@@ -80,6 +82,7 @@ io.on('connection', socket => {
     socket.on('disconnect', () => {
         const user = userLeave(socket.id)
         if (user){
+            if (!user){ socket.emit('roomError'); return }
             io.to(user.room).emit('message', formatMessage(botName ,`${user.username} has left the game`))
 
             const room = getRoom(user.room)
@@ -119,6 +122,7 @@ io.on('connection', socket => {
     // Initializes a new game
     socket.on('startGame',  () => {
         const user = getCurrentUser(socket.id)
+        if (!user){ socket.emit('roomError'); return }
         const room = getRoom(user.room)
         if (room.ingame){ return }
 
@@ -130,6 +134,7 @@ io.on('connection', socket => {
     // Do all the game logic when the mouse is clicked
     socket.on('mouseClick', (coordinates) => {
         const user = getCurrentUser(socket.id)
+        if (!user){ socket.emit('roomError'); return }
         const room = getRoom(user.room)
         if (room.ingame && room.game.gameSettings.currentPlayer.id == user.id){
             const clickedSmth = handleGameClick(room, coordinates)
@@ -154,6 +159,7 @@ io.on('connection', socket => {
     socket.on('updateSettings', settings => {
         if (settings.cellSize < 10 || settings.cellSize > 100) { return }
         const user = getCurrentUser(socket.id)
+        if (!user){ socket.emit('roomError'); return }
         const room = getRoom(user.room)
         room.settings.radius = parseInt(settings.cellSize) || 40
         room.settings.gridShape = settings.gridShape
