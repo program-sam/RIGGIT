@@ -178,6 +178,9 @@ function setup() {
   var canvas = createCanvas(gameSettings.mapWidth, gameSettings.mapHeight);
   canvas.parent(document.getElementById('gameWindow'));
   updateScore(true);
+  setTimeout(function () {
+    return updateCanvas();
+  }, 1);
   frameRate(FR); // Calculate Hex Neighbors
 
   for (var i = 0; i < hexes.length; i++) {

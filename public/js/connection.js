@@ -221,7 +221,7 @@ socket.on('gamePreview', function (previewHexes) {
   });
 });
 socket.on('roomError', function (_) {
-  alert('Something went wrong with this game room. You will be sent to home page.');
+  alert('So sorry but something went wrong with this game room. You will be redirected to home page where you can start a new game.');
   window.location.href = '/';
 });
 
