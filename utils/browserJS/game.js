@@ -114,6 +114,7 @@ function setup() {
     const canvas = createCanvas(gameSettings.mapWidth, gameSettings.mapHeight);
     canvas.parent(document.getElementById('gameWindow'))
     updateScore(true)
+    setTimeout(() => updateCanvas(), 1)
     frameRate(FR)
 
     // Calculate Hex Neighbors
