@@ -160,8 +160,8 @@ socket.on('gameOver', function (players) {
   }
 
   document.getElementById('popup').classList.add("show");
-  document.getElementById('fade').classList.toggle('show'); // document.getElementById('buymeacoffee').style.visibility = 'visible'
-
+  document.getElementById('fade').classList.toggle('show');
+  document.getElementById('buymeacoffee').style.visibility = 'visible';
   setTimeout(function () {
     document.getElementById('popup').classList.remove("show");
     document.getElementById('fade').classList.remove('show');

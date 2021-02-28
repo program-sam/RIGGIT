@@ -195,6 +195,15 @@
 
 #buymeacoffee {
     visibility: hidden;
+    position: absolute;
+    bottom: 150px;
+    left: 0;
+    right: 0;
+    margin: auto;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 #popup {
@@ -218,4 +227,10 @@
     position: absolute;
     bottom: 0;
     left: 50%;
+}
+
+.bmc-btn {
+    height: 40px !important;
+    font-size: 1.4em !important;
+    margin-left: 0.5em !important;
 }

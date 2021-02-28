@@ -38,7 +38,7 @@ io.on('connection', socket => {
         
         roomid = roomid.toLowerCase()
         username = username.length > 15 ? username.substring(0,15) : username
-        const user = userJoin(socket.id, username, roomid)
+        const user = userJoin(socket.id, username.replace(/</g, "&lt;").replace(/>/g, "&gt;"), roomid)
         if (!user){ socket.emit('roomError'); return }
         socket.join(user.room)
 
@@ -65,8 +65,9 @@ io.on('connection', socket => {
     // Listen for chatMessages
     socket.on('chatMessage', msg => {
         const user = getCurrentUser(socket.id)
+        const msgSafe = msg.replace(/</g, "&lt;").replace(/>/g, "&gt;")
         if (!user){ socket.emit('roomError'); return }
-        io.to(user.room).emit('message', formatMessage(user, msg))
+        io.to(user.room).emit('message', formatMessage(user, msgSafe))
     })
 
     // Listen for player color changes
