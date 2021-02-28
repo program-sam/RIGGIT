@@ -9,9 +9,9 @@
     <link rel="stylesheet" href="css/colorPick.min.css">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.9.6/qs.min.js"
-    integrity="sha512-3TmPrquYLaAsUmZKXRARTDC5siWhLAdBVqNo4dWpDABBtLU62AaoTaQJEvjxjExcZYurO6i1dnK85k8pPIBlRg=="
-    crossorigin="anonymous">
-    </script>
+        integrity="sha512-3TmPrquYLaAsUmZKXRARTDC5siWhLAdBVqNo4dWpDABBtLU62AaoTaQJEvjxjExcZYurO6i1dnK85k8pPIBlRg=="
+        crossorigin="anonymous">
+        </script>
 
     <script src="js/jquery.min.js"></script>
     <script src='/socket.io/socket.io.js'></script>
@@ -23,7 +23,7 @@
 </head>
 
 <body>
-    
+
     <div id='container'>
         <div id="left">
             <h3 id='title'></h3>
@@ -44,30 +44,29 @@
                         <span>
                             <label>Cell Size:
                                 <input style="width: 2em;" type="text" id="cellSizeText" disabled>
-                                <input
-                                    style="width: 210px;"
-                                    id='cellSize'
-                                    type='range'
-                                    value=40
-                                    min="15"
-                                    max="100"
+                                <input style="width: 210px;" id='cellSize' type='range' value=40 min="15" max="100"
                                     oninput="document.getElementById('cellSizeText').value = this.value"
-                                    onchange="updateSettings()"
-                                /></label><br />
+                                    onchange="updateSettings()" /></label><br />
                             <label>Grid Shape: <select id='gridShape' onchange="updateSettings()"></select></label>
                         </span>
                     </div>
-                    <p id='buymeacoffee'>Buy me a coffee pretty please</p>
+                    <span id='buymeacoffee'>
+                        Enjoying RIGGIT? Keep it up and running and
+                        <script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js"
+                            data-name="bmc-button" data-slug="programsam" data-color="#90be6d" data-emoji=""
+                            data-font="Cookie" data-text="Buy me a coffee" data-outline-color="#000000"
+                            data-font-color="#000000" data-coffee-color="#FFDD00"></script>
+                    </span>
                     <button onclick="startGame()">Start!</button>
                 </div>
             </div>
         </div>
-        
+
         <span id='gameChat'>
             <div id='playerBox'></div>
             <div id='chatMessages'> </div>
             <div id='sendBar'>
-            <input id='chatInput' onkeydown="if(event.key == 'Enter'){sendMessage()}" />
+                <input id='chatInput' onkeydown="if(event.key == 'Enter'){sendMessage()}" />
                 <img src='/img/arrow.svg' onclick="sendMessage()" />
             </div>
         </span>
@@ -76,4 +75,5 @@
     <div id='fade'></div>
     <span id="popup">Popup text...</span>
 </body>
+
 </html>

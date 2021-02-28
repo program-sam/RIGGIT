@@ -145,7 +145,7 @@ socket.on('gameOver', players => {
 
     document.getElementById('popup').classList.add("show")
     document.getElementById('fade').classList.toggle('show')
-    // document.getElementById('buymeacoffee').style.visibility = 'visible'
+    document.getElementById('buymeacoffee').style.visibility = 'visible'
     setTimeout(() => {
         document.getElementById('popup').classList.remove("show")
         document.getElementById('fade').classList.remove('show')
