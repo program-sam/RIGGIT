@@ -1,10 +1,14 @@
+"use strict";
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
 (function main(global, module, isWorker, workerSize) {
   var canUseWorker = !!(global.Worker && global.Blob && global.Promise && global.OffscreenCanvas && global.OffscreenCanvasRenderingContext2D && global.HTMLCanvasElement && global.HTMLCanvasElement.prototype.transferControlToOffscreen && global.URL && global.URL.createObjectURL);
 
-  function noop() {}
-
-  // create a promise if it exists, otherwise, just
+  function noop() {} // create a promise if it exists, otherwise, just
   // call the function directly
+
+
   function promise(func) {
     var ModulePromise = module.exports.Promise;
     var Prom = ModulePromise !== void 0 ? ModulePromise : global.Promise;
@@ -14,7 +18,6 @@
     }
 
     func(noop, noop);
-
     return null;
   }
 
@@ -25,37 +28,39 @@
     var lastFrameTime = 0;
 
     if (typeof requestAnimationFrame === 'function' && typeof cancelAnimationFrame === 'function') {
-      frame = function (cb) {
+      frame = function frame(cb) {
         var id = Math.random();
-
         frames[id] = requestAnimationFrame(function onFrame(time) {
           if (lastFrameTime === time || lastFrameTime + TIME - 1 < time) {
             lastFrameTime = time;
             delete frames[id];
-
             cb();
           } else {
             frames[id] = requestAnimationFrame(onFrame);
           }
         });
-
         return id;
       };
-      cancel = function (id) {
+
+      cancel = function cancel(id) {
         if (frames[id]) {
           cancelAnimationFrame(frames[id]);
         }
       };
     } else {
-      frame = function (cb) {
+      frame = function frame(cb) {
         return setTimeout(cb, TIME);
       };
-      cancel = function (timer) {
+
+      cancel = function cancel(timer) {
         return clearTimeout(timer);
       };
     }
 
-    return { frame: frame, cancel: cancel };
+    return {
+      frame: frame,
+      cancel: cancel
+    };
   }();
 
   var getWorker = function () {
@@ -65,11 +70,17 @@
 
     function decorate(worker) {
       function execute(options, callback) {
-        worker.postMessage({ options: options || {}, callback: callback });
+        worker.postMessage({
+          options: options || {},
+          callback: callback
+        });
       }
+
       worker.init = function initWorker(canvas) {
         var offscreen = canvas.transferControlToOffscreen();
-        worker.postMessage({ canvas: offscreen }, [offscreen]);
+        worker.postMessage({
+          canvas: offscreen
+        }, [offscreen]);
       };
 
       worker.fire = function fireWorker(options, size, done) {
@@ -79,7 +90,6 @@
         }
 
         var id = Math.random().toString(36).slice(2);
-
         prom = promise(function (resolve) {
           function workerDone(msg) {
             if (msg.data.callback !== id) {
@@ -88,7 +98,6 @@
 
             delete resolves[id];
             worker.removeEventListener('message', workerDone);
-
             prom = null;
             done();
             resolve();
@@ -96,15 +105,19 @@
 
           worker.addEventListener('message', workerDone);
           execute(options, id);
-
-          resolves[id] = workerDone.bind(null, { data: { callback: id } });
+          resolves[id] = workerDone.bind(null, {
+            data: {
+              callback: id
+            }
+          });
         });
-
         return prom;
       };
 
       worker.reset = function resetWorker() {
-        worker.postMessage({ reset: true });
+        worker.postMessage({
+          reset: true
+        });
 
         for (var id in resolves) {
           resolves[id]();
@@ -120,12 +133,12 @@
 
       if (!isWorker && canUseWorker) {
         var code = ['var CONFETTI, SIZE = {}, module = {};', '(' + main.toString() + ')(this, module, true, SIZE);', 'onmessage = function(msg) {', '  if (msg.data.options) {', '    CONFETTI(msg.data.options).then(function () {', '      if (msg.data.callback) {', '        postMessage({ callback: msg.data.callback });', '      }', '    });', '  } else if (msg.data.reset) {', '    CONFETTI.reset();', '  } else if (msg.data.resize) {', '    SIZE.width = msg.data.resize.width;', '    SIZE.height = msg.data.resize.height;', '  } else if (msg.data.canvas) {', '    SIZE.width = msg.data.canvas.width;', '    SIZE.height = msg.data.canvas.height;', '    CONFETTI = module.exports.create(msg.data.canvas);', '  }', '}'].join('\n');
+
         try {
           worker = new Worker(URL.createObjectURL(new Blob([code])));
         } catch (e) {
           // eslint-disable-next-line no-console
-          typeof console !== undefined && typeof console.warn === 'function' ? console.warn('🎊 Could not load worker', e) : null;
-
+          (typeof console === "undefined" ? "undefined" : _typeof(console)) !== undefined && typeof console.warn === 'function' ? console.warn('🎊 Could not load worker', e) : null;
           return null;
         }
 
@@ -201,7 +214,6 @@
     var origin = prop(options, 'origin', Object);
     origin.x = prop(origin, 'x', Number);
     origin.y = prop(origin, 'y', Number);
-
     return origin;
   }
 
@@ -218,13 +230,11 @@
 
   function getCanvas(zIndex) {
     var canvas = document.createElement('canvas');
-
     canvas.style.position = 'fixed';
     canvas.style.top = '0px';
     canvas.style.left = '0px';
     canvas.style.pointerEvents = 'none';
     canvas.style.zIndex = zIndex;
-
     return canvas;
   }
 
@@ -240,7 +250,6 @@
   function randomPhysics(opts) {
     var radAngle = opts.angle * (Math.PI / 180);
     var radSpread = opts.spread * (Math.PI / 180);
-
     return {
       x: opts.x,
       y: opts.y,
@@ -275,14 +284,11 @@
     fetti.random = Math.random() + 5;
     fetti.wobbleX = fetti.x + 10 * fetti.scalar * Math.cos(fetti.wobble);
     fetti.wobbleY = fetti.y + 10 * fetti.scalar * Math.sin(fetti.wobble);
-
     var progress = fetti.tick++ / fetti.totalTicks;
-
     var x1 = fetti.x + fetti.random * fetti.tiltCos;
     var y1 = fetti.y + fetti.random * fetti.tiltSin;
     var x2 = fetti.wobbleX + fetti.random * fetti.tiltCos;
     var y2 = fetti.wobbleY + fetti.random * fetti.tiltSin;
-
     context.fillStyle = 'rgba(' + fetti.color.r + ', ' + fetti.color.g + ', ' + fetti.color.b + ', ' + (1 - progress) + ')';
     context.beginPath();
 
@@ -297,7 +303,6 @@
 
     context.closePath();
     context.fill();
-
     return fetti.tick < fetti.totalTicks;
   }
 
@@ -306,13 +311,10 @@
     var context = canvas.getContext('2d');
     var animationFrame;
     var destroy;
-
     var prom = promise(function (resolve) {
       function onDone() {
         animationFrame = destroy = null;
-
         context.clearRect(0, 0, size.width, size.height);
-
         done();
         resolve();
       }
@@ -330,7 +332,6 @@
         }
 
         context.clearRect(0, 0, size.width, size.height);
-
         animatingFettis = animatingFettis.filter(function (fetti) {
           return updateFetti(context, fetti);
         });
@@ -345,16 +346,14 @@
       animationFrame = raf.frame(update);
       destroy = onDone;
     });
-
     return {
-      addFettis: function (fettis) {
+      addFettis: function addFettis(fettis) {
         animatingFettis = animatingFettis.concat(fettis);
-
         return prom;
       },
       canvas: canvas,
       promise: prom,
-      reset: function () {
+      reset: function reset() {
         if (animationFrame) {
           raf.cancel(animationFrame);
         }
@@ -389,10 +388,8 @@
       var shapes = prop(options, 'shapes');
       var scalar = prop(options, 'scalar');
       var origin = getOrigin(options);
-
       var temp = particleCount;
       var fettis = [];
-
       var startX = canvas.width * origin.x;
       var startY = canvas.height * origin.y;
 
@@ -410,16 +407,15 @@
           gravity: gravity,
           scalar: scalar
         }));
-      }
-
-      // if we have a previous canvas already animating,
+      } // if we have a previous canvas already animating,
       // add to it
+
+
       if (animationObj) {
         return animationObj.addFettis(fettis);
       }
 
       animationObj = animate(canvas, fettis, resizer, size, done);
-
       return animationObj.promise;
     }
 
@@ -466,15 +462,13 @@
         if (worker) {
           // TODO this really shouldn't be immediate, because it is expensive
           var obj = {
-            getBoundingClientRect: function () {
+            getBoundingClientRect: function getBoundingClientRect() {
               if (!isLibCanvas) {
                 return canvas.getBoundingClientRect();
               }
             }
           };
-
           resizer(obj);
-
           worker.postMessage({
             resize: {
               width: obj.width,
@@ -482,10 +476,10 @@
             }
           });
           return;
-        }
-
-        // don't actually query the size here, since this
+        } // don't actually query the size here, since this
         // can execute frequently and rapidly
+
+
         size.width = size.height = null;
       }
 
@@ -527,7 +521,10 @@
     return fire;
   }
 
-  module.exports = confettiCannon(null, { useWorker: true, resize: true });
+  module.exports = confettiCannon(null, {
+    useWorker: true,
+    resize: true
+  });
   module.exports.create = confettiCannon;
 })(function () {
   if (typeof window !== 'undefined') {
