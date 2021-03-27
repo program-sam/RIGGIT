@@ -1,7 +1,7 @@
 const { getRoomUsers } = require('./users')
 const inside = require('point-in-polygon');
 const fs = require('fs');
-const rawdata = fs.readFileSync('./utils/countries.geojson');
+const rawdata = fs.readFileSync('./utils/data/countries.geojson');
 const countryNames = []
 let countryData = JSON.parse(rawdata);
 
@@ -93,16 +93,13 @@ function initializeGame(room){
     const mapHeight = 700
     const mapMarginX = mapWidth * 0.02
     const mapMarginY = mapHeight * 0.05
-
     const players = getRoomUsers(room.id)
     const moveOrder = shuffle(JSON.parse(JSON.stringify(players)))
-    
+    moveOrder.sort((x,y) => x == moveOrder.find(m => !m.bot) ? -1 : y == moveOrder.find(m => !m.bot) ? 1 : 0 )
     // Generate hexes pattern
     const hexes = generatePattern([mapWidth, mapHeight], [mapMarginX, mapMarginY], room.settings)
-
     // Randomly distribute people
     randomlyDistributePeople(hexes, moveOrder)
-
     // Calculate Hex Neighbors
     for (let i = 0; i < hexes.length; i++) {
         const H = hexes[i]
@@ -114,7 +111,6 @@ function initializeGame(room){
             }
         }
     }
-
     checkUnusable(room, hexes)
     
     room.game = {
@@ -157,9 +153,8 @@ function randomlyDistributePeople(hexes, players){
             }
         }
     }
-
     // 4 blocks
-    for (let i = 0; i < parseInt(hexes.length / 3 * 0.1); i++){
+    for (let i = 0; i < parseInt(hexes.length / players.length * 0.1); i++){
         for (let j = 0; j < players.length; j++) {
             if (players.length - j  > i){ continue } // Give first player slightly less of an advantage
             let found = false
@@ -172,9 +167,8 @@ function randomlyDistributePeople(hexes, players){
             }
         }
     }
-
     // 3 blocks
-    for (let i = 0; i < parseInt(hexes.length / 3 * 0.2); i++){
+    for (let i = 0; i < parseInt(hexes.length / players.length * 0.2); i++){
         for (let j = 0; j < players.length; j++) {
             let found = false
             while (!found) {
@@ -186,9 +180,8 @@ function randomlyDistributePeople(hexes, players){
             }
         }
     }
-
     // 2 blocks
-    for (let i = 0; i < parseInt(hexes.length / 3 * 0.4); i++){
+    for (let i = 0; i < parseInt(hexes.length / players.length * 0.4); i++){
         for (let j = 0; j < players.length; j++) {
             let found = false
             while (!found) {

@@ -11,11 +11,12 @@ const server = http.createServer(app)
 const io = socketio(server)
 
 const { formatMessage } = require('./utils/messages')
-const { userJoin, getCurrentUser, userLeave, getRoomUsers } = require('./utils/users')
+const { userJoin, botJoin, getCurrentUser, userLeave, getRoomUsers } = require('./utils/users')
 const { makeRoom, checkRoom, getRoom, removeRoom } = require('./utils/rooms')
 const { generatePattern, initializeGame, handleGameClick, checkWinner } = require('./utils/game')
+const { makeMoves } = require('./utils/ai')
 
-const botName = {username: 'GAME', id:''}
+const botName = {username: 'RIGGIT', id:''}
 // Set static folder
 app.use(express.static('public'))
 app.use(favicon(__dirname + '/public/img/blueFavicon.png'));
@@ -50,6 +51,7 @@ io.on('connection', socket => {
 
         // Send users and room info
         const room = getRoom(roomid)
+        if (getRoomUsers(roomid).length == 1){ room.host = user.id }
         io.to(user.room).emit('roominfo', { room, users: getRoomUsers(user.room) })
 
         // If user joins while in-game, emit some required data to follow
@@ -71,10 +73,12 @@ io.on('connection', socket => {
     })
 
     // Listen for player color changes
-    socket.on('changeColor', color => {
-        const user = getCurrentUser(socket.id)
-        user.color = color
+    socket.on('changeColor', data => {
+        const user = getCurrentUser(data.id)
         if (!user){ socket.emit('roomError'); return }
+        if (data.id != socket.id && !user.bot){ return }
+
+        user.color = data.color
         const room = getRoom(user.room)
         io.to(user.room).emit('roominfo', { room, users: getRoomUsers(user.room) })
     })
@@ -89,6 +93,7 @@ io.on('connection', socket => {
             const room = getRoom(user.room)
             const users = getRoomUsers(room.id)
             if (users.length == 0){ removeRoom(user.room); return }
+            if (room.host == user.id){ room.host = users[0].id }
 
             // If a person leaves, check if room should be removed or game should be ended
             if (room.ingame){
@@ -114,8 +119,9 @@ io.on('connection', socket => {
                 //     }
                 // }
             }
-
             io.to(user.room).emit('roominfo', { room, users })
+        } else {
+            socket.emit('roomError');
         }
         
     })
@@ -136,25 +142,7 @@ io.on('connection', socket => {
     socket.on('mouseClick', (coordinates) => {
         const user = getCurrentUser(socket.id)
         if (!user){ socket.emit('roomError'); return }
-        const room = getRoom(user.room)
-        if (room.ingame && room.game.gameSettings.currentPlayer.id == user.id){
-            const clickedSmth = handleGameClick(room, coordinates)
-            if (!clickedSmth){ return }
-            io.to(user.room).emit('gameData', room.game)
-            if (room.game.gameOver){
-                room.game.gameOver = false
-                room.ingame = false
-                const winners = checkWinner(room)
-                const players = getRoomUsers(user.room)
-                for (let i = 0; i < players.length; i++){
-                    const p = players[i]
-                    if (winners.some(w => w.id == p.id) && winners.length > 1){ p.ties += 1 }
-                    else if (winners.some(w => w.id == p.id)){ p.wins += 1 }
-                }
-                io.to(user.room).emit('gameOver', winners)
-                io.to(user.room).emit('roominfo', { room, users: players })
-            }
-        } 
+        clickLogic(user, coordinates)
     })
 
     socket.on('updateSettings', settings => {
@@ -167,7 +155,55 @@ io.on('connection', socket => {
         io.to(user.room).emit('roominfo', { room, users: getRoomUsers(user.room) })
         io.to(user.room).emit('gamePreview', generatePattern([1200, 700], [1200*0.02, 700*0.05], room.settings))
     })
+
+    socket.on('kickPlayer', data => {
+        if (socket.id != getRoom(getCurrentUser(socket.id).room).host){ return }
+
+        const user = userLeave(data.id)
+        if (user){
+            io.to(user.room).emit('message', formatMessage(botName ,`${data.name} has been kicked by the host`))
+            io.to(user.room).emit('roominfo', { room: getRoom(user.room), users: getRoomUsers(user.room) })
+        } else {
+            socket.emit('roomError');
+        }
+    })
+
+    socket.on('addNPC', _ => {
+        const user = getCurrentUser(socket.id)
+        const bot = botJoin(user.room)
+
+        io.to(user.room).emit('message', formatMessage(botName ,`${bot.username} has joined the game`))
+        io.to(user.room).emit('roominfo', { room: getRoom(user.room), users: getRoomUsers(user.room) })
+    })
 })
+
+function clickLogic(user, coordinates){
+    const room = getRoom(user.room)
+    if (room.ingame && room.game.gameSettings.currentPlayer.id == user.id){
+        const clickedSmth = handleGameClick(room, coordinates)
+        if (!clickedSmth){
+            const nextPlayer = room.game.gameSettings.currentPlayer
+            if (nextPlayer.bot){ makeMoves(room.game.gameSettings.currentPlayer, clickLogic) }
+            return
+        }
+        io.to(user.room).emit('gameData', room.game)
+        if (room.game.gameOver){
+            room.game.gameOver = false
+            room.ingame = false
+            const winners = checkWinner(room)
+            const players = getRoomUsers(user.room)
+            for (let i = 0; i < players.length; i++){
+                const p = players[i]
+                if (winners.some(w => w.id == p.id) && winners.length > 1){ p.ties += 1 }
+                else if (winners.some(w => w.id == p.id)){ p.wins += 1 }
+            }
+            io.to(user.room).emit('gameOver', winners)
+            io.to(user.room).emit('roominfo', { room, users: players })
+        }
+        const nextPlayer = room.game.gameSettings.currentPlayer
+        if (user != nextPlayer && nextPlayer.bot){ makeMoves(room.game.gameSettings.currentPlayer, clickLogic) }
+    }
+}
 
 const PORT = 3000 || process.env.PORT
 

@@ -1,6 +1,6 @@
 
 const fs = require('fs');
-const rawdata = fs.readFileSync('./utils/countries.geojson');
+const rawdata = fs.readFileSync('./utils/data/countries.geojson');
 const countryNames = JSON.parse(rawdata).features.map(cd => cd.properties.CNTRY_NAME)
 const colorList = [ '#c04abc', '#d81159', '#a41623', '#c27100', '#FFD23F', '#3da5d9', '#0d5c63', '#29bf12', '#0B032D' ]
 countryNames.sort()
@@ -27,6 +27,7 @@ function randomNewID(){
 function makeRoom(){
     const room = {
         id: randomNewID(),
+        host: 0,
         gameStarted: new Date(),
         ingame: false,
         availableColors: colorList,
