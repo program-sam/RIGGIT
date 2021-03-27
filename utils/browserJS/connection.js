@@ -48,45 +48,54 @@ socket.on('message', message => {
 socket.on('roominfo', data => {
     players = data.users
     you = players.find(p => p.id == socket.id)
-
+    if (!you){
+        alert('You have been kicked out of the game')
+        window.location.href = '/'
+    }
     const usedColors = players.map(p => p.color.toLowerCase())
     colorList = data.room.availableColors.filter(c => !usedColors.includes(c.toLowerCase()))
-
-    document.getElementById('gridShape').innerHTML = '<optgroup label="Shapes"><option value="Rectangle">Rectangle</option></optgroup><optgroup label="Countries">'
-
-    data.room.availableCountries.map(c => {
-        document.getElementById('gridShape').innerHTML += `<option ${c == data.room.settings.gridShape ? 'selected' : ''} value='${c}'>${c}</option>`
-    })
-
-    document.getElementById('gridShape').innerHTML += '</optgroup>'
 
     const table = document.getElementById('playerList')
     const playerBox = document.getElementById('playerBox')
     table.innerHTML = ''
 
+    colorPickerList = [you]
     for (let i = 0; i < players.length; i++) {
-        const player = players[i]
+        const player = players[i];
+        if (player.bot && data.room.host == you.id){ colorPickerList.push(player) }
 
         // Edit table in lobby
         table.innerHTML += `<tr>
             <td>${player.username}</td>
             <td><div class="picker ${player.id}" style='background-color: ${player.color}'></div></td>
             <td>${player.wins}</td>
-            <td>${player.ties}</td>    
-        </tr>`
+            <td>${player.ties}</td>
+            ` + (data.room.host == you.id && player.id != you.id ? '<td class="kick" onClick="kickPlayer(\'' + player.id + '\',\'' + player.username + '\')">kick</td>' : '<td></td>') + `
+        </tr>`;
     }
 
-    $(`.${you.id}`).colorPick({
-        'allowRecent': false,
-        'initialColor': you.color,
-        'palette': colorList,
-        'onColorSelected': function () {
-            this.element.css({ 'backgroundColor': this.color, 'color': this.color });
-            if (this.color.toUpperCase() != you.color.toUpperCase()) {
-                socket.emit('changeColor', this.color);
+    table.innerHTML += data.room.host == you.id && players.length < 5 ? `<tr>
+        <td colspan="4">
+            <button class="npc" onClick="addNPC()">Add AI</button>
+        </td>
+        <td></td>
+    </tr>` : '';
+
+    function addColorPicker(player){
+        $(`.${player.id}`).colorPick({
+            'allowRecent': false,
+            'initialColor': player.color,
+            'palette': colorList,
+            'onColorSelected': function () {
+                this.element.css({ 'backgroundColor': this.color, 'color': this.color });
+                if (this.color.toUpperCase() != player.color.toUpperCase()) {
+                    socket.emit('changeColor', {color: this.color, id: player.id});
+                }
             }
-        }
-    });
+        });
+    }
+
+    colorPickerList.forEach(cp => addColorPicker(cp))
 
     ingame = data.room.ingame
     if (ingame) {
@@ -95,8 +104,16 @@ socket.on('roominfo', data => {
     }
     else { document.getElementById('lobby').style.top = 'initial' }
 
+    document.getElementById('gridShape').innerHTML = '<optgroup label="Shapes"><option value="Rectangle">Rectangle</option></optgroup><optgroup label="Countries">'
+    data.room.availableCountries.map(c => { document.getElementById('gridShape').innerHTML += `<option ${c == data.room.settings.gridShape ? 'selected' : ''} value='${c}'>${c}</option>` })
+    document.getElementById('gridShape').innerHTML += '</optgroup>'
     document.getElementById('cellSize').value = data.room.settings.radius
     document.getElementById('cellSizeText').value = data.room.settings.radius
+    if (data.room.host != you.id){
+        document.getElementById('gridShape').disabled = true
+        document.getElementById('cellSize').disabled = true
+        document.getElementById('startButton').disabled = true
+    }
     drawPlayerBox(data.room.game.gameSettings || gameSettings, players, data.room.game.hexes)
 })
 
@@ -210,6 +227,10 @@ function startGame() {
     socket.emit('startGame')
 }
 
+function addNPC() {
+    socket.emit('addNPC')
+}
+
 function updateSettings() {
     const cellSize = document.getElementById('cellSize')
     const gridShape = document.getElementById('gridShape')
@@ -219,6 +240,13 @@ function updateSettings() {
             gridShape: gridShape.value
         })
     }
+}
+
+function kickPlayer(id, name){
+    if (confirm("Are you sure you want to remove " + name + " from the game?")){
+        socket.emit('kickPlayer', { id, name })
+    }
+    
 }
 
 function drawPlayerBox(gs, players, hexes) {

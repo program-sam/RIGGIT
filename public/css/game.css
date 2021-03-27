@@ -99,6 +99,16 @@
     margin: auto;
 }
 
+#startButton:disabled {
+    filter: grayscale(100%);
+    background-color: var(--neutral-dark);
+    border: 5px solid var(--neutral-dark);
+}
+
+#startButton:disabled:hover {
+    cursor: default;
+}
+
 #gameChat {
     flex: 1;
     display: flex;
@@ -233,4 +243,24 @@
     height: 40px !important;
     font-size: 1.4em !important;
     margin-left: 0.5em !important;
+}
+
+.bmc-btn-text {
+    margin-left: 0 !important; 
+}
+
+.kick {
+    color: var(--attention);
+    font-size: 0.7em;
+}
+
+.kick:hover {
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.npc {
+    font-size: 0.7em;
+    padding: 0.2em 0.6em;
+    border: 2px solid var(--dark);
 }
