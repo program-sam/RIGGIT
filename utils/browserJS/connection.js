@@ -59,7 +59,7 @@ socket.on('roominfo', data => {
     const playerBox = document.getElementById('playerBox')
     table.innerHTML = ''
 
-    colorPickerList = [you]
+    const colorPickerList = [you]
     for (let i = 0; i < players.length; i++) {
         const player = players[i];
         if (player.bot && data.room.host == you.id){ colorPickerList.push(player) }
