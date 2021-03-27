@@ -3,7 +3,7 @@ const { getRoomUsers } = require('./users')
 const delay = ms => new Promise(res => setTimeout(res, ms));
 
 async function makeMoves(player, callBack){
-    
+    await delay(1000)
     // Calculate N random moves and choose one.
 
     const room = getRoom(player.room)
@@ -12,7 +12,7 @@ async function makeMoves(player, callBack){
 
     const options = []
 
-    for (let i = 0; i < 1000; i++){
+    for (let i = 0; i < player.bot; i++){
         let tempHexList = JSON.parse(JSON.stringify(hexes));
         tempHexList = tempHexList.filter(h => !h.island && !h.owner)
         if (tempHexList.length < 5){ console.log('temphexlist smaller than 5'); return } // Prevent infinite loop
@@ -53,9 +53,11 @@ async function makeMoves(player, callBack){
         }
 
         const winningPlayers = playerScores.filter(ps => ps.s == winningCount)
-        if (winningPlayers.length > 1){ return - winningCount }
-        else if (playerScores.find(ps => ps.s == winningCount).id != player.id){ return - winningCount }
-        else {return winningCount}
+        const finalScore = optionHexes.reduce((a, b) => a + b.people, 0)
+
+        if (winningPlayers.length > 1){ return -finalScore }
+        else if (playerScores.find(ps => ps.s == winningCount).id != player.id){ return -finalScore }
+        else { return finalScore }
     })    
     const bestOption = options[scores.indexOf(Math.max(...scores))]
     for (let i = 0; i < 5; i++){

@@ -31,7 +31,9 @@ function botJoin(room){
         color: randomColor(room),
         wins: 0,
         ties: 0,
-        bot: true
+        bot: Math.floor(Math.random() * 100 + 80)
+         // Random dificulty of the bot
+         // Equates to how many options should be considered before making a move
     }
     users.push(bot)
     return bot
