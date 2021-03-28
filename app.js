@@ -91,8 +91,11 @@ io.on('connection', socket => {
             io.to(user.room).emit('message', formatMessage(botName ,`${user.username} has left the game`))
 
             const room = getRoom(user.room)
-            const users = getRoomUsers(room.id)
-            if (users.length == 0){ removeRoom(user.room); return }
+            const users = getRoomUsers(room.id).filter(p => !p.bot)
+            if (users.length == 0){
+                getRoomUsers(room.id).forEach(bot => userLeave(bot.id))
+                removeRoom(user.room);
+                return }
             if (room.host == user.id){ room.host = users[0].id }
 
             // If a person leaves, check if room should be removed or game should be ended
@@ -179,6 +182,7 @@ io.on('connection', socket => {
 
 function clickLogic(user, coordinates){
     const room = getRoom(user.room)
+    if (!room){ return }
     if (room.ingame && room.game.gameSettings.currentPlayer.id == user.id){
         const clickedSmth = handleGameClick(room, coordinates)
         if (!clickedSmth){
