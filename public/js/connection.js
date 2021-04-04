@@ -133,6 +133,10 @@ socket.on('roominfo', function (data) {
     document.getElementById('gridShape').disabled = true;
     document.getElementById('cellSize').disabled = true;
     document.getElementById('startButton').disabled = true;
+  } else {
+    document.getElementById('gridShape').disabled = false;
+    document.getElementById('cellSize').disabled = false;
+    document.getElementById('startButton').disabled = false;
   }
 
   drawPlayerBox(data.room.game.gameSettings || gameSettings, players, data.room.game.hexes);
