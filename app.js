@@ -9,6 +9,8 @@ var favicon = require('serve-favicon');
 const app = express()
 const server = http.createServer(app)
 const io = socketio(server)
+const zip = require('express-easy-zip');
+
 
 const { formatMessage } = require('./utils/messages')
 const { userJoin, botJoin, getCurrentUser, userLeave, getRoomUsers } = require('./utils/users')
@@ -16,10 +18,13 @@ const { makeRoom, checkRoom, getRoom, removeRoom } = require('./utils/rooms')
 const { generatePattern, initializeGame, handleGameClick, checkWinner } = require('./utils/game')
 const { makeMoves } = require('./utils/ai')
 
+
+
 const botName = {username: 'RIGGIT', id:''}
 // Set static folder
 app.use(express.static('public'))
 app.use(favicon(__dirname + '/public/img/blueFavicon.png'));
+app.use(zip());
 
 app.get('/', (req, res) => { res.sendFile(__dirname + '/public/html/index.html') })
 
@@ -27,6 +32,16 @@ app.get('/game', (req, res) => { res.sendFile(__dirname + '/public/html/game.htm
 
 app.get('/api/makeRoom', (req, res) => {
     res.send(makeRoom().id)
+})
+
+app.get('/api/exportallgamearchives753', (req, res) => {
+    res.zip({
+        files: [{
+            path: __dirname + "/archive",
+            name: 'archive'
+        }],
+        filename: 'archive.zip'
+    });
 })
 
 app.get('/api/validateRoom/:roomid', (req, res) => {
