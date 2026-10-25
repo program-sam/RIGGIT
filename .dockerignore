@@ -1,0 +1,8 @@
+/archive
+/node_modules
+.git
+.env
+.env.*
+*.pem
+*.key
+creds

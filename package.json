@@ -13,6 +13,7 @@
   "dependencies": {
     "@babel/polyfill": "^7.12.1",
     "express": "^4.17.1",
+    "express-easy-zip": "^1.1.5",
     "point-in-polygon": "^1.0.1",
     "serve-favicon": "^2.5.0",
     "socket.io": "^3.1.0"
