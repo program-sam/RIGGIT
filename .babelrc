@@ -1,0 +1,15 @@
+{
+  "presets": [
+    // ["minify", {
+    //   "keepFnName": false
+    // }],
+    [
+      "@babel/preset-env",
+      {
+        "targets": "> 0.25%, not dead",
+        "useBuiltIns": "entry",
+        "corejs": "2"
+      }
+    ]
+  ]
+}
